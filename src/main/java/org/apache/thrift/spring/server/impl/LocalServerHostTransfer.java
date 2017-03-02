@@ -1,6 +1,6 @@
-package org.apache.thrift.spring.supports.impl;
+package org.apache.thrift.spring.server.impl;
 
-import org.apache.thrift.spring.supports.ServerHostTransfer;
+import org.apache.thrift.spring.server.ServerHostTransfer;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

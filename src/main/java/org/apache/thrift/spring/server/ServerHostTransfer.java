@@ -1,4 +1,4 @@
-package org.apache.thrift.spring.supports;
+package org.apache.thrift.spring.server;
 
 /**
  * 服务器主机提供者

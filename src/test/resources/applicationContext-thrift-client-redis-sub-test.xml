@@ -13,18 +13,12 @@
 
     <!--<context:component-scan base-package="org.apache.thrift.test"/>-->
 
-    <bean id="configProvider" class="org.apache.thrift.spring.client.impl.FixedTSConfigProvider">
-        <constructor-arg>
-            <list>
-                <value>h127.0.0.1:p9090:t5000:w2</value>
-                <value>hlocalhost:p9090:t5000:w1</value>
-            </list>
-        </constructor-arg>
-    </bean>
+    <import resource="applicationContext-thrift-redis-pubsub-common-test.xml"/>
 
-    <!-- 定时刷新配置列表 -->
-    <bean id="timerConfigProvider" class="org.apache.thrift.test.MemoryTimerTSConfigProvider">
-        <constructor-arg name="interval" value="5000"/>
+    <bean id="configProvider" class="org.apache.thrift.spring.client.redis.RedisSubTSConfigProvider">
+        <constructor-arg name="channel" value="thrift:hello:service"/>
+        <constructor-arg name="prefix" value="thrift:hello:service"/>
+        <constructor-arg name="redisExecutor" ref="redisExecutor"/>
     </bean>
 
     <bean id="poolConfig" class="org.apache.thrift.spring.config.TClientPoolConfig">
@@ -32,7 +26,7 @@
 
     <bean id="helloService" class="org.apache.thrift.spring.client.TClientProxyFactory">
         <constructor-arg name="serviceClass" value="org.apache.thrift.test.HelloService"/>
-        <constructor-arg name="configProvider" ref="timerConfigProvider"/>
+        <constructor-arg name="configProvider" ref="configProvider"/>
         <property name="poolConfig" ref="poolConfig"/>
     </bean>
 

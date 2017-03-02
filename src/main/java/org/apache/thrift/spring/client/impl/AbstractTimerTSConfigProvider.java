@@ -1,12 +1,11 @@
-package org.apache.thrift.spring.supports.impl;
+package org.apache.thrift.spring.client.impl;
 
 import org.apache.thrift.spring.config.TSConfig;
+import org.apache.thrift.spring.supports.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,9 +28,9 @@ public abstract class AbstractTimerTSConfigProvider extends AbstractTSConfigProv
 
     private void initTimer() {
         // 开启定时器，每隔一段时间就去刷新配置列表
-        Runnable runnable = new Runnable() {
+        TimerTask timerTask = new TimerTask(0, interval, TimeUnit.MILLISECONDS) {
             @Override
-            public void run() {
+            protected void executeBusiness() {
                 try {
                     logger.debug("---------------------------------------------------------------------------------------------------------");
                     logger.debug("重新同步加载Thrift服务器列表.....");
@@ -48,9 +47,7 @@ public abstract class AbstractTimerTSConfigProvider extends AbstractTSConfigProv
                 }
             }
         };
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-        service.scheduleAtFixedRate(runnable, 0, interval, TimeUnit.MILLISECONDS);
+        timerTask.start();
     }
 
     public int getInterval() {

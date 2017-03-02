@@ -1,13 +1,10 @@
 package org.apache.thrift.spring.supports;
 
 import org.apache.thrift.TProcessor;
-import org.apache.thrift.spring.supports.impl.DefaultProcessorProvider;
+import org.apache.thrift.spring.server.ProcessorProvider;
+import org.apache.thrift.spring.client.impl.DefaultProcessorProvider;
 import org.apache.thrift.test.HelloServiceImpl;
 import org.junit.Test;
-
-import java.lang.reflect.Constructor;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Arvin

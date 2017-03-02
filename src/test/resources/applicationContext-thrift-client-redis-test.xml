@@ -15,7 +15,7 @@
 
     <import resource="applicationContext-thrift-redis-common-test.xml"/>
 
-    <bean id="configProvider" class="org.apache.thrift.spring.supports.redis.RedisTimerTSConfigProvider">
+    <bean id="configProvider" class="org.apache.thrift.spring.client.redis.RedisTimerTSConfigProvider">
         <constructor-arg name="interval" value="2000"/>
         <constructor-arg name="prefix" value="thrift:hello:service"/>
         <constructor-arg name="redisExecutor" ref="redisExecutor"/>

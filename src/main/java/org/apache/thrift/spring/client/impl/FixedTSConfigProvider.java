@@ -1,11 +1,9 @@
-package org.apache.thrift.spring.supports.impl;
+package org.apache.thrift.spring.client.impl;
 
 import org.apache.thrift.spring.config.TSConfig;
-import org.apache.thrift.spring.supports.TSConfigProvider;
 import org.apache.thrift.spring.utils.Utils;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 固定Thrift 服务配置提供者， 提供初始化的时候固定配置

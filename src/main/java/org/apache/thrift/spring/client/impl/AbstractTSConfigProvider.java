@@ -1,7 +1,9 @@
-package org.apache.thrift.spring.supports.impl;
+package org.apache.thrift.spring.client.impl;
 
 import org.apache.thrift.spring.config.TSConfig;
-import org.apache.thrift.spring.supports.TSConfigProvider;
+import org.apache.thrift.spring.client.TSConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -16,6 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @time 2017/3/2 11:05
  */
 public abstract class AbstractTSConfigProvider implements TSConfigProvider {
+
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /** 保存配置列表 */
     private List<TSConfig> configList = new CopyOnWriteArrayList<>();
@@ -51,6 +55,9 @@ public abstract class AbstractTSConfigProvider implements TSConfigProvider {
 
     @Override
     public TSConfig select() {
+        if (this.configList.isEmpty()) {
+            return null;
+        }
         if (this.fifo.isEmpty()) {
             synchronized (this) {
                 if (this.fifo.isEmpty()) {

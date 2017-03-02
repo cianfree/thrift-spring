@@ -1,4 +1,4 @@
-package org.apache.thrift.spring.supports;
+package org.apache.thrift.spring.client;
 
 import org.apache.thrift.spring.config.TSConfig;
 

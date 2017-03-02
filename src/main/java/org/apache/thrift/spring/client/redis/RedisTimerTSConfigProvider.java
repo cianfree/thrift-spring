@@ -1,7 +1,8 @@
-package org.apache.thrift.spring.supports.redis;
+package org.apache.thrift.spring.client.redis;
 
 import org.apache.thrift.spring.config.TSConfig;
-import org.apache.thrift.spring.supports.impl.AbstractTimerTSConfigProvider;
+import org.apache.thrift.spring.client.impl.AbstractTimerTSConfigProvider;
+import org.apache.thrift.spring.supports.redis.RedisExecutor;
 import org.apache.thrift.spring.utils.Utils;
 import redis.clients.jedis.Jedis;
 

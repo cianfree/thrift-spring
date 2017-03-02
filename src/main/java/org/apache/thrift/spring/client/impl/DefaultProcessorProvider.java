@@ -1,11 +1,10 @@
-package org.apache.thrift.spring.supports.impl;
+package org.apache.thrift.spring.client.impl;
 
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.spring.exception.UnImplementIfaceException;
-import org.apache.thrift.spring.supports.ProcessorProvider;
+import org.apache.thrift.spring.server.ProcessorProvider;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * <pre>

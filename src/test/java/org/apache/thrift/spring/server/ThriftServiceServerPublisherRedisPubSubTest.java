@@ -6,22 +6,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
+ * 发布订阅模式
  * @author Arvin
  * @time 2017/3/1 20:02
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:applicationContext-thrift-server-redis-test.xml"})
-public class ThriftServiceServerPublisherRedisTest {
+@ContextConfiguration({"classpath:applicationContext-thrift-server-redis-pub-test.xml"})
+public class ThriftServiceServerPublisherRedisPubSubTest {
 
     @Test
     public void testStartServer() throws Exception {
 
         System.out.println("启动了");
-        Thread.sleep(10000);
+        //Thread.sleep(10000);
 
-//        while(true) {
-//
-//        }
+        while(true) {
+
+        }
 
         // 5秒后结束
 

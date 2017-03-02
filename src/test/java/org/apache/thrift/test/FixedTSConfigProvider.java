@@ -1,7 +1,7 @@
 package org.apache.thrift.test;
 
 import org.apache.thrift.spring.config.TSConfig;
-import org.apache.thrift.spring.supports.TSConfigProvider;
+import org.apache.thrift.spring.client.TSConfigProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;

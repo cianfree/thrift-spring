@@ -1,4 +1,4 @@
-package org.apache.thrift.spring.supports;
+package org.apache.thrift.spring.server;
 
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.spring.exception.UnImplementIfaceException;

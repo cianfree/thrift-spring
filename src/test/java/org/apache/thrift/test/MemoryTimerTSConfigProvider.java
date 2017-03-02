@@ -1,7 +1,7 @@
 package org.apache.thrift.test;
 
 import org.apache.thrift.spring.config.TSConfig;
-import org.apache.thrift.spring.supports.impl.AbstractTimerTSConfigProvider;
+import org.apache.thrift.spring.client.impl.AbstractTimerTSConfigProvider;
 
 import java.util.ArrayList;
 import java.util.List;

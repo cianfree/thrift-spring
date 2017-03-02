@@ -36,7 +36,7 @@ public class RedisExecutor {
      * @param <T>     返回类型
      * @return
      */
-    protected <T> T execute(Invoker<T> invoker) {
+    public <T> T execute(Invoker<T> invoker) {
         Jedis jedis = null;
         try {
             jedis = jedisManager.get();

@@ -4,7 +4,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.spring.config.TClientPoolConfig;
-import org.apache.thrift.spring.supports.TSConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;

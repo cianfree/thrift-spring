@@ -14,8 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @time 2017/3/1 21:02
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:applicationContext-thrift-client-redis-test.xml"})
-public class TClientProxyFactoryRedisTest {
+@ContextConfiguration({"classpath:applicationContext-thrift-client-redis-sub-test.xml"})
+public class TClientProxyFactoryRedisSubTest {
 
     /** 日志 */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -29,15 +29,11 @@ public class TClientProxyFactoryRedisTest {
         while (true) {
             try {
                 // 没两秒模拟执行一次
-                Thread.sleep(2000);
-
-                System.out.println(helloService);
-
+                Thread.sleep(5000);
                 System.out.println(helloService.sayHello("Arvin"));
 
-                System.out.println(helloService.sayHello("Cianfree"));
             } catch (Exception e) {
-                System.out.println("调用错误： " + e.getMessage());
+                System.out.println("调用错误： [" + e.getClass().getName() + "], " + e.getMessage());
             }
 
         }

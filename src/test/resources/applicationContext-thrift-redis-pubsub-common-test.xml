@@ -18,11 +18,5 @@
     <bean id="redisExecutor" class="org.apache.thrift.spring.supports.redis.RedisExecutor">
         <constructor-arg name="jedisManager" ref="jedisManager"/>
     </bean>
-
-    <bean id="redisConfigReporter" class="org.apache.thrift.spring.server.redis.RedisTSConfigReporter">
-        <constructor-arg name="prefix" value="thrift:hello:service"/>
-        <constructor-arg name="redisExecutor" ref="redisExecutor"/>
-    </bean>
-
     <!-- **************************************************************************** -->
 </beans>
