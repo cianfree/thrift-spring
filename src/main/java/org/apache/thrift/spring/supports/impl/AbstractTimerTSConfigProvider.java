@@ -33,9 +33,16 @@ public abstract class AbstractTimerTSConfigProvider extends AbstractTSConfigProv
             @Override
             public void run() {
                 try {
+                    logger.debug("---------------------------------------------------------------------------------------------------------");
                     logger.debug("重新同步加载Thrift服务器列表.....");
-                    setConfigList(syncLoadTSConfig());
+                    List<TSConfig> configList = syncLoadTSConfig();
+                    setConfigList(configList);
                     logger.debug("重新同步加载Thrift服务器列表成功.....");
+                    logger.debug("新的服务器列表：");
+                    for (TSConfig config : configList) {
+                        logger.debug(TSConfig.serialize(config));
+                    }
+                    logger.debug("---------------------------------------------------------------------------------------------------------");
                 } catch (Exception e) {
                     logger.error("重新同步加载Thrift服务器列表失败.....", e);
                 }

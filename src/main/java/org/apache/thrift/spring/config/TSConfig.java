@@ -57,4 +57,34 @@ public class TSConfig {
         this.weight = weight < 1 ? 1 : weight;
         return this;
     }
+
+    /**
+     * 序列化为字符串， 序列化规则为：
+     * host:port:timeout:weight
+     *
+     * @param config 要序列话的对象
+     */
+    public static String serialize(TSConfig config) {
+        return config.getHost() + ":" + config.getPort() + ":" + config.getTimeout() + ":" + config.getWeight();
+    }
+
+    /**
+     * 反序列化，格式为：
+     * host:port:timeout:weight
+     *
+     * @param string 要反序列化的字符串
+     * @return
+     */
+    public static TSConfig deserialize(String string) {
+        try {
+            String[] arr = string.split(":");
+            return new TSConfig()
+                    .setHost(arr[0])
+                    .setPort(Integer.parseInt(arr[1]))
+                    .setTimeout(Integer.parseInt(arr[2]))
+                    .setWeight(Integer.parseInt(arr[3]));
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

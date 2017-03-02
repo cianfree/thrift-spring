@@ -118,6 +118,7 @@ public class ThriftServiceServerPublisher implements InitializingBean, Disposabl
 
         // 上报服务配置
         if (null != this.configReporter) {
+            logger.info("上报Thrift服务【" + service.getClass().getName() + "】配置：" + TSConfig.serialize(config));
             this.configReporter.report(config);
         }
     }
@@ -162,6 +163,7 @@ public class ThriftServiceServerPublisher implements InitializingBean, Disposabl
     private void stopService() {
         serverThread.stopServer();
         if (this.configReporter != null) {
+            logger.info("移除Thrift服务【" + service.getClass().getName() + "】配置：" + TSConfig.serialize(config));
             this.configReporter.remove(this.config);
         }
         logger.info("关闭Thrift服务 [" + this.service.getClass().getName() + "]！");
