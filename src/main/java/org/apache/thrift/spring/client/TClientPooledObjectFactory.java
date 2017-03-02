@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
  * @author Arvin
  * @time 2017/3/1 20:16
  */
-public class TClientPoolableObjectFactory extends BasePooledObjectFactory<TServiceClient> {
+public class TClientPooledObjectFactory extends BasePooledObjectFactory<TServiceClient> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TClientPoolableObjectFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(TClientPooledObjectFactory.class);
 
     /** 配置提供者 */
     private final TSConfigProvider configProvider;
@@ -35,12 +35,12 @@ public class TClientPoolableObjectFactory extends BasePooledObjectFactory<TServi
     /** ServiceId */
     private String serviceId;
 
-    public TClientPoolableObjectFactory(TSConfigProvider configProvider, TServiceClientFactory<TServiceClient> clientFactory) {
+    public TClientPooledObjectFactory(TSConfigProvider configProvider, TServiceClientFactory<TServiceClient> clientFactory) {
         this.configProvider = configProvider;
         this.clientFactory = clientFactory;
     }
 
-    public TClientPoolableObjectFactory(TSConfigProvider configProvider, TServiceClientFactory<TServiceClient> clientFactory, String serviceId) {
+    public TClientPooledObjectFactory(TSConfigProvider configProvider, TServiceClientFactory<TServiceClient> clientFactory, String serviceId) {
         this.configProvider = configProvider;
         this.clientFactory = clientFactory;
         this.serviceId = serviceId;

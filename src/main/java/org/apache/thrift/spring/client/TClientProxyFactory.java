@@ -116,11 +116,11 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
             Class<TServiceClientFactory<TServiceClient>> fi = ThriftUtils.parseClientFactoryClassExt(serviceClass);
             TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
 
-            TClientPoolableObjectFactory clientPool = null;
+            TClientPooledObjectFactory clientPool = null;
             if (strictMode) { // 严格模式下，需要指定serviceId
-                clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory, serviceId);
+                clientPool = new TClientPooledObjectFactory(configProvider, clientFactory, serviceId);
             } else {
-                clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory);
+                clientPool = new TClientPooledObjectFactory(configProvider, clientFactory);
             }
 
             pool = new GenericObjectPool<>(clientPool, poolConfig);
