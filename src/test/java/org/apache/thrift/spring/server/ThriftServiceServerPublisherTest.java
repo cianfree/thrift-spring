@@ -22,10 +22,10 @@ public class ThriftServiceServerPublisherTest {
     @Test
     public void testStartServer() throws Exception {
 
-//        while (true) {
-//        }
+        while (true) {
+        }
 
-        try {
+        /*try {
             TTransport transport = new TSocket("localhost", 9090);
             transport.open();
 
@@ -40,7 +40,7 @@ public class ThriftServiceServerPublisherTest {
             Thread.sleep(2000);
         } catch (TException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 }
