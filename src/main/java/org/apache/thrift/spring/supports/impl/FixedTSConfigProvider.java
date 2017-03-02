@@ -3,8 +3,6 @@ package org.apache.thrift.spring.supports.impl;
 import org.apache.thrift.spring.config.TSConfig;
 import org.apache.thrift.spring.supports.TSConfigProvider;
 import org.apache.thrift.spring.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,15 +13,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Arvin
  * @time 2017/3/2 11:05
  */
-public class FixedTSConfigProvider implements TSConfigProvider {
+public class FixedTSConfigProvider extends AbstractTSConfigProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(FixedTSConfigProvider.class);
-
-    /** 保存配置列表 */
-    private List<TSConfig> configList = new CopyOnWriteArrayList<>();
-
-    /** 使用FIFO队列来选择一个配置 */
-    private Queue<TSConfig> fifo = new LinkedList<>();
+    public FixedTSConfigProvider(Collection<String> configCol) {
+        super(parseTsConfig(configCol));
+    }
 
     /**
      * <pre>
@@ -40,7 +34,8 @@ public class FixedTSConfigProvider implements TSConfigProvider {
      *
      * @param configCol 配置列表
      */
-    public FixedTSConfigProvider(Collection<String> configCol) {
+    private static List<TSConfig> parseTsConfig(Collection<String> configCol) {
+        List<TSConfig> configList = new ArrayList<>();
         if (configCol == null || configCol.isEmpty()) {
             throw new IllegalArgumentException("没有指定Thrift服务器列表配置！");
         }
@@ -50,17 +45,11 @@ public class FixedTSConfigProvider implements TSConfigProvider {
             if (config != null) {
                 // weight有多少个就房多少个到list中
                 for (int i = 0; i < config.getWeight(); ++i) {
-                    this.configList.add(config);
+                    configList.add(config);
                 }
             }
         }
-        if (this.configList.isEmpty()) {
-            throw new IllegalArgumentException("没有指定Thrift服务器列表配置！");
-        }
-        // 打乱List顺序并添加到队列中
-        Collections.shuffle(this.configList);
-        // 添加到队列中
-        fifo.addAll(this.configList);
+        return configList;
     }
 
     /**
@@ -97,23 +86,6 @@ public class FixedTSConfigProvider implements TSConfigProvider {
 
         }
         return config;
-    }
-
-    @Override
-    public List<TSConfig> getAll() {
-        return Collections.synchronizedList(this.configList);
-    }
-
-    @Override
-    public TSConfig select() {
-        if (this.fifo.isEmpty()) {
-            synchronized (this) {
-                if (this.fifo.isEmpty()) {
-                    this.fifo.addAll(this.configList);
-                }
-            }
-        }
-        return this.fifo.poll();
     }
 
 

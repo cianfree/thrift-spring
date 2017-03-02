@@ -41,6 +41,10 @@ public class TClientProxyFactoryTest {
         logger.warn("Warn info...");
         logger.error("Error info...");
         logger.trace("Trace info...");
+
+        while (true) {
+
+        }
     }
 
 }
