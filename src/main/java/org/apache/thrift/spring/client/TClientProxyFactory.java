@@ -5,6 +5,8 @@ import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.spring.config.TClientPoolConfig;
 import org.apache.thrift.spring.supports.TSConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -20,6 +22,8 @@ import java.lang.reflect.Proxy;
  */
 public class TClientProxyFactory implements FactoryBean, InitializingBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(TClientProxyFactory.class);
+
     /** 代理对象实例 */
     private Object proxyObject;
 
@@ -33,15 +37,23 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
     private final String serviceClass;
 
     /** 连接池配置信息 */
-    private final TClientPoolConfig poolConfig;
+    private TClientPoolConfig poolConfig;
 
     /** 服务器提供者配置 */
     private final TSConfigProvider configProvider;
 
-    public TClientProxyFactory(String serviceClass, TClientPoolConfig poolConfig, TSConfigProvider configProvider) {
+    public TClientProxyFactory(String serviceClass, TSConfigProvider configProvider) {
         this.serviceClass = serviceClass;
-        this.poolConfig = poolConfig;
         this.configProvider = configProvider;
+    }
+
+    public TClientPoolConfig getPoolConfig() {
+        return poolConfig;
+    }
+
+    public TClientProxyFactory setPoolConfig(TClientPoolConfig poolConfig) {
+        this.poolConfig = poolConfig;
+        return this;
     }
 
     @Override
@@ -61,35 +73,48 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        // 加载Iface接口
-        this.objectType = loadObjectType(this.serviceClass);
-        // 加载Client.Factory类
-        String clientFactoryClazzName = this.objectType.getName().replaceAll("Iface$", "Client\\$Factory");
-        Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(clientFactoryClazzName);
-        TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
-
-        TClientPoolableObjectFactory clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory);
-
-        pool = new GenericObjectPool<>(clientPool, poolConfig);
-
-        // 创建动态代理
-        this.proxyObject = Proxy.newProxyInstance(classLoader, new Class[]{this.objectType}, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                // 从连接池中获取client
-                TServiceClient client = pool.borrowObject();
-                try {
-                    // 执行方法
-                    return method.invoke(client, args);
-                } catch (Exception e) {
-                    throw e;
-                } finally {
-                    // 释放到连接池中
-                    pool.returnObject(client);
-                }
+        try {
+            if (this.poolConfig == null) {
+                logger.info("使用默认的连接池配置【" + this.serviceClass + "】");
+                this.poolConfig = new TClientPoolConfig();
             }
-        });
+
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            // 加载Iface接口
+            this.objectType = loadObjectType(this.serviceClass);
+            logger.info("Load Iface type successfully [" + this.objectType.getName() + "]");
+
+            // 加载Client.Factory类
+            String clientFactoryClazzName = this.objectType.getName().replaceAll("Iface$", "Client\\$Factory");
+            Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(clientFactoryClazzName);
+            TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
+
+            TClientPoolableObjectFactory clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory);
+
+            pool = new GenericObjectPool<>(clientPool, poolConfig);
+
+            // 创建动态代理
+            this.proxyObject = Proxy.newProxyInstance(classLoader, new Class[]{this.objectType}, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    // 从连接池中获取client
+                    TServiceClient client = pool.borrowObject();
+                    try {
+                        // 执行方法
+                        return method.invoke(client, args);
+                    } catch (Exception e) {
+                        throw e;
+                    } finally {
+                        // 释放到连接池中
+                        pool.returnObject(client);
+                    }
+                }
+            });
+            logger.info("Build[" + this.objectType.getName() + "]'s proxy successfully!");
+        } catch (Exception e) {
+            logger.error("Create Thrift Client [" + this.serviceClass + "] Proxy Error: " + e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -99,11 +124,16 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
      * @return
      */
     private Class<?> loadObjectType(String serviceClass) throws ClassNotFoundException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (serviceClass.endsWith("$Iface")) {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (serviceClass.endsWith("$Iface")) {
+                return classLoader.loadClass(serviceClass);
+            }
+            serviceClass = serviceClass + "$Iface";
             return classLoader.loadClass(serviceClass);
+        } catch (ClassNotFoundException e) {
+            logger.error("Load thrift service interface error: " + e.getMessage());
+            throw e;
         }
-        serviceClass = serviceClass + "$Iface";
-        return classLoader.loadClass(serviceClass);
     }
 }

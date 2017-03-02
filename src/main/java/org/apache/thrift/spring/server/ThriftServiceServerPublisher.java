@@ -12,6 +12,9 @@ import org.apache.thrift.spring.supports.impl.DefaultProcessorProvider;
 import org.apache.thrift.spring.supports.impl.LocalServerHostTransfer;
 import org.apache.thrift.spring.utils.Utils;
 import org.apache.thrift.transport.TServerSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.net.UnknownHostException;
@@ -22,7 +25,9 @@ import java.net.UnknownHostException;
  * @author Arvin
  * @time 2017/3/1 18:03
  */
-public class ThriftServiceServerPublisher implements InitializingBean {
+public class ThriftServiceServerPublisher implements InitializingBean, DisposableBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(ThriftServiceServerPublisher.class);
 
     /** 发布配置 required */
     private TSConfig config;
@@ -146,6 +151,22 @@ public class ThriftServiceServerPublisher implements InitializingBean {
         }
     }
 
+    @Override
+    public void destroy() throws Exception {
+        stopService();
+    }
+
+    /**
+     * 停止服务
+     */
+    private void stopService() {
+        serverThread.stopServer();
+        if (this.configReporter != null) {
+            this.configReporter.remove(this.config);
+        }
+        logger.info("关闭Thrift服务 [" + this.service.getClass().getName() + "]！");
+    }
+
     /**
      * 服务线程
      */
@@ -164,10 +185,10 @@ public class ThriftServiceServerPublisher implements InitializingBean {
         @Override
         public void run() {
             try {
-                System.out.println("Service [" + ThriftServiceServerPublisher.this.service.getClass().getName() + "] 已经成功发布！");
+                logger.info("ThriftService服务 [" + ThriftServiceServerPublisher.this.service.getClass().getName() + "] 已经成功发布！");
                 server.serve();
             } catch (Exception e) {
-                //
+                logger.warn("发布ThriftService[" + ThriftServiceServerPublisher.this.service.getClass().getName() + "] 失败！");
             }
         }
 
@@ -176,14 +197,4 @@ public class ThriftServiceServerPublisher implements InitializingBean {
         }
     }
 
-    /**
-     * 停止服务
-     */
-    public void stopService() {
-        serverThread.stopServer();
-        if (this.configReporter != null) {
-            this.configReporter.remove(this.config);
-        }
-        System.out.println("Service [" + this.service.getClass().getName() + "] 服务已经关闭！");
-    }
 }

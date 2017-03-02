@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
+ * 计算本地服务地址
  * @author Arvin
  * @time 2017/3/1 18:13
  */

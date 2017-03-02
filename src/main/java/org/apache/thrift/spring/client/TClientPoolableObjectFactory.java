@@ -9,6 +9,8 @@ import org.apache.thrift.spring.config.TSConfig;
 import org.apache.thrift.spring.supports.TSConfigProvider;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 管理连接池中的TServiceClient对象
@@ -17,6 +19,8 @@ import org.apache.thrift.transport.TTransport;
  * @time 2017/3/1 20:16
  */
 public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TServiceClient> {
+
+    private static final Logger logger = LoggerFactory.getLogger(TClientPoolableObjectFactory.class);
 
     /** 配置提供者 */
     private final TSConfigProvider configProvider;
@@ -53,7 +57,7 @@ public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TSer
 
         socket.open();
 
-        System.out.println("创建一个新的Client： " + client);
+        logger.debug("创建一个新的TServiceClient： " + client);
 
         return client;
     }
@@ -66,7 +70,7 @@ public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TSer
      */
     @Override
     public void destroyObject(TServiceClient client) throws Exception {
-        System.out.println("销毁一个Client： " + client);
+        logger.debug("销毁一个TServiceClient： " + client);
         super.destroyObject(client);
         TTransport transport = client.getInputProtocol().getTransport();
         if (transport != null) {
@@ -76,6 +80,7 @@ public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TSer
 
     @Override
     public boolean validateObject(TServiceClient client) {
+        logger.debug("Validate 一个 TServiceClient 状态： " + client);
         TTransport tansport = client.getInputProtocol().getTransport();
         return tansport.isOpen();
     }

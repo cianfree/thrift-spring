@@ -12,7 +12,7 @@ public class TClientPoolConfig extends Config {
 
     public TClientPoolConfig() {
         this.setTestWhileIdle(true);
-        // 连接空闲时间
+        // 连接空闲时间， 当设置了testWhileIdle的时候，连接空闲了以下时间就会去调用validateObject方法校验连接是否可用，如果不可用就会移除
         this.setMinEvictableIdleTimeMillis(60000L);
         this.setTimeBetweenEvictionRunsMillis(30000L);
         this.setNumTestsPerEvictionRun(-1);

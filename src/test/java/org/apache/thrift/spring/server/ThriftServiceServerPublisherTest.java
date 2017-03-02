@@ -1,5 +1,11 @@
 package org.apache.thrift.spring.server;
 
+import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.test.HelloService;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,11 +20,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ThriftServiceServerPublisherTest {
 
     @Test
-    public void testStartServer() throws InterruptedException {
+    public void testStartServer() throws Exception {
 
-        while (true) {}
+//        while (true) {
+//        }
 
-        /*try {
+        try {
             TTransport transport = new TSocket("localhost", 9090);
             transport.open();
 
@@ -34,7 +41,6 @@ public class ThriftServiceServerPublisherTest {
         } catch (TException e) {
             e.printStackTrace();
         }
-*/
     }
 
 }

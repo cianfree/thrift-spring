@@ -4,6 +4,8 @@ import org.apache.thrift.TException;
 import org.apache.thrift.test.HelloService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,6 +18,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration({"classpath:applicationContext-thrift-client-test.xml"})
 public class TClientProxyFactoryTest {
 
+    /** 日志 */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private HelloService.Iface helloService;
 
@@ -25,9 +30,17 @@ public class TClientProxyFactoryTest {
 
         System.out.println(helloService.sayHello("Arvin"));
 
-        Thread.sleep(500);
+        Thread.sleep(2000);
 
         System.out.println(helloService.sayHello("Cianfree"));
+
+        System.out.println("Logger: " + logger);
+
+        logger.debug("Debug info...");
+        logger.info("Info info...");
+        logger.warn("Warn info...");
+        logger.error("Error info...");
+        logger.trace("Trace info...");
     }
 
 }

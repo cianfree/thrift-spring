@@ -23,8 +23,7 @@
     <bean id="thriftHelloService" class="org.apache.thrift.test.HelloServiceImpl"/>
 
     <!-- 发布HelloService服务 -->
-    <bean id="thriftHelloServicePublish" class="org.apache.thrift.spring.server.ThriftServiceServerPublisher"
-          destroy-method="stopService">
+    <bean id="thriftHelloServicePublish" class="org.apache.thrift.spring.server.ThriftServiceServerPublisher">
         <property name="config" ref="thriftHelloServiceConfig"/>
         <property name="service" ref="thriftHelloService"/>
     </bean>

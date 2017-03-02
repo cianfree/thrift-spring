@@ -16,7 +16,7 @@ public class TSConfig {
     /** 提供服务的端口 */
     private int port;
 
-    /** 超时时间，单位是毫秒， 默认5苗超时 */
+    /** 超时时间，单位是毫秒， 默认5秒超时 */
     private int timeout = 5000;
 
     public String getHost() {

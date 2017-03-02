@@ -21,7 +21,7 @@
     <bean id="helloService" class="org.apache.thrift.spring.client.TClientProxyFactory">
         <constructor-arg name="serviceClass" value="org.apache.thrift.test.HelloService"/>
         <constructor-arg name="configProvider" ref="configProvider"/>
-        <constructor-arg name="poolConfig" ref="poolConfig"/>
+        <property name="poolConfig" ref="poolConfig"/>
     </bean>
     
 </beans>
