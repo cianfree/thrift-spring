@@ -84,6 +84,7 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>${jedis.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
