@@ -1,6 +1,8 @@
 package org.apache.thrift.spring.client;
 
-import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -18,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @author Arvin
  * @time 2017/3/1 20:16
  */
-public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TServiceClient> {
+public class TClientPoolableObjectFactory extends BasePooledObjectFactory<TServiceClient> {
 
     private static final Logger logger = LoggerFactory.getLogger(TClientPoolableObjectFactory.class);
 
@@ -40,8 +42,7 @@ public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TSer
      * @throws Exception
      */
     @Override
-    public TServiceClient makeObject() throws Exception {
-
+    public TServiceClient create() throws Exception {
         // 选择一个服务器配置
         TSConfig config = this.configProvider.select();
 
@@ -58,30 +59,34 @@ public class TClientPoolableObjectFactory extends BasePoolableObjectFactory<TSer
         socket.open();
 
         logger.debug("创建一个新的TServiceClient： " + client);
-
         return client;
+    }
+
+    @Override
+    public PooledObject<TServiceClient> wrap(TServiceClient client) {
+        return new DefaultPooledObject<>(client);
     }
 
     /**
      * 从连接池中删除该对象
      *
-     * @param client 要删除的对象
+     * @param pooledObject 要删除的对象
      * @throws Exception
      */
     @Override
-    public void destroyObject(TServiceClient client) throws Exception {
-        logger.debug("销毁一个TServiceClient： " + client);
-        super.destroyObject(client);
-        TTransport transport = client.getInputProtocol().getTransport();
+    public void destroyObject(PooledObject<TServiceClient> pooledObject) throws Exception {
+        logger.debug("销毁一个TServiceClient： " + pooledObject.getObject());
+        super.destroyObject(pooledObject);
+        TTransport transport = pooledObject.getObject().getInputProtocol().getTransport();
         if (transport != null) {
             transport.close();
         }
     }
 
     @Override
-    public boolean validateObject(TServiceClient client) {
-        logger.debug("Validate 一个 TServiceClient 状态： " + client);
-        TTransport tansport = client.getInputProtocol().getTransport();
+    public boolean validateObject(PooledObject<TServiceClient> pooledObject) {
+        logger.debug("Validate 一个 TServiceClient 状态： " + pooledObject.getObject());
+        TTransport tansport = pooledObject.getObject().getInputProtocol().getTransport();
         return tansport.isOpen();
     }
 

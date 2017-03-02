@@ -17,7 +17,9 @@
         <junit.version>4.11</junit.version>
         <spring.version>4.1.6.RELEASE</spring.version>
         <commons.pool>1.6</commons.pool>
+        <commons.pool2>2.4.2</commons.pool2>
         <slf4j.version>1.7.24</slf4j.version>
+        <jedis.version>2.4.2</jedis.version>
     </properties>
     <dependencies>
         <dependency>
@@ -41,9 +43,9 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-            <version>${commons.pool}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>${commons.pool2}</version>
         </dependency>
 
         <dependency>
@@ -76,6 +78,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
         </dependency>
     </dependencies>
 
