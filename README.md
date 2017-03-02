@@ -1,6 +1,5 @@
 # Thrift集成Spring
     因thrift使用起来比较麻烦，为了能够让Spring方便的管理Thrift的客户端资源，如TSocket，TServiceClient，实际上这些资源是可以复用的，因此利用连接池的技术将这些高度利用起来，提高了利用率，提高了性能。
-    
     另外，使用Spring来发布Thrift的服务或者来创建客户端代理也是非常有必要的，通过本项目将简化了Thrift的发布和使用，当然，这只是限于Java平台中的发布和使用
 
 # 通过Spring发布Thrift服务
