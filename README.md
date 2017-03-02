@@ -1,6 +1,9 @@
 # Thrift集成Spring
-    因thrift使用起来比较麻烦，为了能够让Spring方便的管理Thrift的客户端资源，如TSocket，TServiceClient，实际上这些资源是可以复用的，因此利用连接池的技术将这些高度利用起来，提高了利用率，提高了性能。
-    另外，使用Spring来发布Thrift的服务或者来创建客户端代理也是非常有必要的，通过本项目将简化了Thrift的发布和使用，当然，这只是限于Java平台中的发布和使用
+    因thrift使用起来比较麻烦，为了能够让Spring方便的管理Thrift的客户端资源，如TSocket，TServiceClient
+    实际上这些资源是可以复用的，因此利用连接池的技术将这些高度利用起来，提高了利用率，提高了性能。
+    
+    另外，使用Spring来发布Thrift的服务或者来创建客户端代理也是非常有必要的，通过本项目将简化了Thrift的发
+    布和使用，当然，这只是限于Java平台中的发布和使用
 
 # 支持的功能
     (1) 服务端，一个服务一个端口发布
@@ -14,7 +17,8 @@
     (8) 客户端，支持基于Redis的PubSub机制刷新服务列表的模式
 
 # 通过Spring发布Thrift服务
-    通过本项目支持，可以非常轻松的进行Thrift项目的发布，具体的发布流程如下（关于Thrift.thrift的编写和相关类的生成不在本项目的说明范围之内，请读者自行阅读相关资料）
+    通过本项目支持，可以非常轻松的进行Thrift项目的发布，具体的发布流程如下（关于Thrift.thrift的编写和相关
+    类的生成不在本项目的说明范围之内，请读者自行阅读相关资料）
     
 ## 编写Spring发布配置文件
     本例中，在 `applicationContext-thrift-server-test.xml`,内容如下：
@@ -124,7 +128,9 @@ public class ThriftServiceServerPublisherTest {
 ```    
 ## 编写测试类
     本例测试类： `org.apache.thrift.spring.client.TClientProxyFactoryTest`:
-    注意，先要启动服务端，把`org.apache.thrift.spring.server.ThriftServiceServerPublisherTest.testStartServer`方法体改成 while(true);
+    注意，先要启动服务端，把
+        `org.apache.thrift.spring.server.ThriftServiceServerPublisherTest.testStartServer`
+    方法体改成 while(true);
 
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
