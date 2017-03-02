@@ -4,6 +4,8 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.spring.config.TClientPoolConfig;
+import org.apache.thrift.spring.utils.ThriftUtils;
+import org.apache.thrift.spring.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -41,9 +43,33 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
     /** 服务器提供者配置 */
     private final TSConfigProvider configProvider;
 
+    /** 是否使用严格模式，严格模式下，客户端需要提供ServiceId才能获取客户端，ServiceId通过serviceClass计算，不包含Iface */
+    private boolean strictMode;
+
+    /** 服务唯一ID， 可以自定义 */
+    private String serviceId;
+
     public TClientProxyFactory(String serviceClass, TSConfigProvider configProvider) {
         this.serviceClass = serviceClass;
         this.configProvider = configProvider;
+    }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public TClientProxyFactory setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+        return this;
+    }
+
+    public boolean isStrictMode() {
+        return strictMode;
+    }
+
+    public TClientProxyFactory setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
+        return this;
     }
 
     public TClientPoolConfig getPoolConfig() {
@@ -73,6 +99,9 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         try {
+            // 初始化服务ID
+            initServiceId();
+
             if (this.poolConfig == null) {
                 logger.info("使用默认的连接池配置【" + this.serviceClass + "】");
                 this.poolConfig = new TClientPoolConfig();
@@ -80,15 +109,19 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
 
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             // 加载Iface接口
-            this.objectType = loadObjectType(this.serviceClass);
+            this.objectType = ThriftUtils.parseIfaceClassExt(serviceClass);
             logger.info("Load Iface type successfully [" + this.objectType.getName() + "]");
 
             // 加载Client.Factory类
-            String clientFactoryClazzName = this.objectType.getName().replaceAll("Iface$", "Client\\$Factory");
-            Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(clientFactoryClazzName);
+            Class<TServiceClientFactory<TServiceClient>> fi = ThriftUtils.parseClientFactoryClassExt(serviceClass);
             TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
 
-            TClientPoolableObjectFactory clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory);
+            TClientPoolableObjectFactory clientPool = null;
+            if (strictMode) { // 严格模式下，需要指定serviceId
+                clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory, serviceId);
+            } else {
+                clientPool = new TClientPoolableObjectFactory(configProvider, clientFactory);
+            }
 
             pool = new GenericObjectPool<>(clientPool, poolConfig);
 
@@ -113,6 +146,15 @@ public class TClientProxyFactory implements FactoryBean, InitializingBean {
         } catch (Exception e) {
             logger.error("Create Thrift Client [" + this.serviceClass + "] Proxy Error: " + e.getMessage());
             throw e;
+        }
+    }
+
+    /**
+     * 初始化服务ID， 如果用户设置了就用户的，否则根据serviceClass计算
+     */
+    private void initServiceId() {
+        if (Utils.isBlank(this.serviceId)) {
+            this.serviceId = ThriftUtils.parseServiceClassExt(serviceClass).getName();
         }
     }
 

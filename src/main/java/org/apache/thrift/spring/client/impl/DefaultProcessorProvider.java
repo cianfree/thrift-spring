@@ -1,8 +1,8 @@
 package org.apache.thrift.spring.client.impl;
 
 import org.apache.thrift.TProcessor;
-import org.apache.thrift.spring.exception.UnImplementIfaceException;
 import org.apache.thrift.spring.server.ProcessorProvider;
+import org.apache.thrift.spring.utils.ThriftUtils;
 
 import java.lang.reflect.Constructor;
 
@@ -35,31 +35,17 @@ public class DefaultProcessorProvider implements ProcessorProvider {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public TProcessor provide(Object service) {
         try {
-            Class[] interfaces = service.getClass().getInterfaces();
-            Class iface = null;
-            if (interfaces != null && interfaces.length > 0) {
-                for (Class ifs : interfaces) {
-                    if (ifs.getName().endsWith("$Iface")) {
-                        iface = ifs; // 找到了Thrift对应的Iface
-                        break;
-                    }
-                }
-            }
-            if (null == iface) {
-                throw new UnImplementIfaceException(service.getClass().getName() + " 没有实现Thrift的Iface接口!");
-            }
+            Class<?> iface = ThriftUtils.parseIfaceClass(service);
             // 找对应的Processor类
-            String processClassName = iface.getName().replaceAll("Iface$", "Processor");
-            Class processorClass = iface.getClassLoader().loadClass(processClassName);
+            Class processorClass = ThriftUtils.parseProcessorClass(service);
             // 找到只有一个参数的构造函数
             Constructor constructor = processorClass.getConstructor(iface);
             // 实例化
             Object processor = constructor.newInstance(service);
             return (TProcessor) processor;
-        } catch (UnImplementIfaceException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

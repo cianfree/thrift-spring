@@ -6,10 +6,13 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.spring.config.TSConfig;
+import org.apache.thrift.spring.utils.Utils;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +32,18 @@ public class TClientPoolableObjectFactory extends BasePooledObjectFactory<TServi
     /** 客户端的工厂类 */
     private final TServiceClientFactory<TServiceClient> clientFactory;
 
+    /** ServiceId */
+    private String serviceId;
+
     public TClientPoolableObjectFactory(TSConfigProvider configProvider, TServiceClientFactory<TServiceClient> clientFactory) {
         this.configProvider = configProvider;
         this.clientFactory = clientFactory;
+    }
+
+    public TClientPoolableObjectFactory(TSConfigProvider configProvider, TServiceClientFactory<TServiceClient> clientFactory, String serviceId) {
+        this.configProvider = configProvider;
+        this.clientFactory = clientFactory;
+        this.serviceId = serviceId;
     }
 
     /**
@@ -45,6 +57,41 @@ public class TClientPoolableObjectFactory extends BasePooledObjectFactory<TServi
         // 选择一个服务器配置
         TSConfig config = this.configProvider.select();
 
+        if (Utils.isBlank(this.serviceId)) {
+            return createWithoutServiceId(config);
+        } else {
+            return createWithServiceId(config);
+        }
+    }
+
+    /**
+     * 根据ServiceId获取， 适用于服务端多个服务发布到同一个端口的情况
+     *
+     * @param config 配置
+     * @return
+     */
+    private TServiceClient createWithServiceId(TSConfig config) throws TTransportException {
+        TSocket transport = new TSocket(config.getHost(), config.getPort());
+        transport.open();
+
+        TProtocol protocol = new TBinaryProtocol(transport);
+        // 指定serviceId
+        TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, this.serviceId);
+
+        TServiceClient client = this.clientFactory.getClient(multiplexedProtocol);
+
+        logger.debug("创建一个ServiceId为【" + this.serviceId + "】的新TServiceClient： " + client);
+        return client;
+    }
+
+    /**
+     * 不需要ServiceId， 适用于服务端同一个端口只发布一个服务实例的情况
+     *
+     * @param config 配置
+     * @return
+     * @throws TTransportException
+     */
+    private TServiceClient createWithoutServiceId(TSConfig config) throws TTransportException {
         TSocket socket = new TSocket(config.getHost(), config.getPort());
 
         if (config.getTimeout() > 0) {

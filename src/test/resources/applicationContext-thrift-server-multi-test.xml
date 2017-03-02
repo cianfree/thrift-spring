@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+     		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+     		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+     		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+
+    <!--<context:component-scan base-package="org.apache.thrift.test"/>-->
+
+    <!-- 发布服务配置 -->
+    <bean id="serverConfig" class="org.apache.thrift.spring.config.TSConfig">
+        <property name="host" value="127.0.0.1"/>
+        <property name="port" value="9090"/>
+        <property name="timeout" value="5000"/>
+    </bean>
+
+    <!-- 发布HelloService服务 -->
+    <bean id="thriftHelloServicePublish" class="org.apache.thrift.spring.server.MultipleThriftServiceServerPublisher">
+        <property name="config" ref="serverConfig"/>
+        <property name="serviceList">
+            <list>
+                <!-- 服务类 -->
+                <bean class="org.apache.thrift.test.HelloServiceImpl"/>
+                <bean class="org.apache.thrift.test.HiServiceImpl"/>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>
