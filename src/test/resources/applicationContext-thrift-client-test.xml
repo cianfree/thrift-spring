@@ -33,6 +33,7 @@
     <bean id="helloService" class="org.apache.thrift.spring.client.TClientProxyFactory">
         <constructor-arg name="serviceClass" value="org.apache.thrift.test.HelloService"/>
         <constructor-arg name="configProvider" ref="timerConfigProvider"/>
+        <!-- poolConfig 可以使用默认值 -->
         <property name="poolConfig" ref="poolConfig"/>
     </bean>
 
